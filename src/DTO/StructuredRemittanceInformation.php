@@ -6,9 +6,18 @@ namespace Genkgo\Camt\DTO;
 
 class StructuredRemittanceInformation
 {
-    private ?CreditorReferenceInformation $creditorReferenceInformation = null;
+    /**
+     * @var null|CreditorReferenceInformation
+     */
+    private $creditorReferenceInformation;
 
-    private ?string $additionalRemittanceInformation = null;
+    /**
+     * @var null|string
+     */
+    private $additionalRemittanceInformation;
+
+    private ?ReferredDocumentInformation $referredDocumentInformation = null;
+    private ?ReferredDocumentAmount $referredDocumentAmount = null;
 
     public function getAdditionalRemittanceInformation(): ?string
     {
@@ -29,4 +38,25 @@ class StructuredRemittanceInformation
     {
         $this->creditorReferenceInformation = $creditorReferenceInformation;
     }
+
+    public function getReferredDocumentInformation(): ?ReferredDocumentInformation
+    {
+        return $this->referredDocumentInformation;
+    }
+
+    public function setReferredDocumentInformation(?ReferredDocumentInformation $referredDocumentInformation): void
+    {
+        $this->referredDocumentInformation = $referredDocumentInformation;
+    }
+
+    public function getReferredDocumentAmount(): ?ReferredDocumentAmount
+    {
+        return $this->referredDocumentAmount;
+    }
+
+    public function setReferredDocumentAmount(?ReferredDocumentAmount $referredDocumentAmount): void
+    {
+        $this->referredDocumentAmount = $referredDocumentAmount;
+    }
+
 }
