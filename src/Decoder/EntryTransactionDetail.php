@@ -12,9 +12,15 @@ use SimpleXMLElement;
 
 abstract class EntryTransactionDetail
 {
-    private DateDecoderInterface $dateDecoder;
+    /**
+     * @var DateDecoderInterface
+     */
+    private $dateDecoder;
 
-    private MoneyFactory $moneyFactory;
+    /**
+     * @var MoneyFactory
+     */
+    private $moneyFactory;
 
     /**
      * EntryTransactionDetail constructor.
@@ -213,6 +219,51 @@ abstract class EntryTransactionDetail
                 }
 
                 $remittanceInformation->addStructuredBlock($structuredRemittanceInformation);
+
+                if (isset($xmlDetailsStructuredBlock->RfrdDocInf)) {
+                    $referredDocumentInformation = new DTO\ReferredDocumentInformation();
+
+                    if (isset($xmlDetailsStructuredBlock->RfrdDocInf->Tp, $xmlDetailsStructuredBlock->RfrdDocInf->Tp->CdOrPrtry, $xmlDetailsStructuredBlock->RfrdDocInf->Tp->CdOrPrtry->Cd)
+
+                    ) {
+                        $referredDocumentInformation->setCode(
+                            (string) $xmlDetailsStructuredBlock->RfrdDocInf->Tp->CdOrPrtry->Cd
+                        );
+                    }
+
+                    if (isset($xmlDetailsStructuredBlock->RfrdDocInf->Nb)) {
+                        $referredDocumentInformation->setNr(
+                            (string) $xmlDetailsStructuredBlock->RfrdDocInf->Nb
+                        );
+                    }
+
+                    $structuredRemittanceInformation->setReferredDocumentInformation($referredDocumentInformation);
+                }
+
+                if (isset($xmlDetailsStructuredBlock->RfrdDocAmt)) {
+                    $referredDocumentAmount = new DTO\ReferredDocumentAmount();
+
+                    if (isset($xmlDetailsStructuredBlock->RfrdDocAmt)) {
+
+                        $money = null;
+
+                        if (isset($xmlDetailsStructuredBlock->RfrdDocAmt->RmtdAmt)) {
+                            $CdtDbtInd = new SimpleXMLElement('<CdtDbtInd>CRDT</CdtDbtInd>');
+                            $money = $this->moneyFactory->create($xmlDetailsStructuredBlock->RfrdDocAmt->RmtdAmt, $CdtDbtInd);
+                        }
+
+                        if (isset($xmlDetailsStructuredBlock->RfrdDocAmt->CdtNoteAmt)) {
+                            $CdtDbtInd = new SimpleXMLElement('<CdtDbtInd>DBIT</CdtDbtInd>');
+                            $money = $this->moneyFactory->create($xmlDetailsStructuredBlock->RfrdDocAmt->CdtNoteAmt, $CdtDbtInd);
+                        }
+
+                        if($money) {
+                            $referredDocumentAmount->setAmount($money);
+                        }
+                    }
+
+                    $structuredRemittanceInformation->setReferredDocumentAmount($referredDocumentAmount);
+                }
             }
         }
 
